@@ -23,7 +23,11 @@ export class WordleGame {
         this.guesses.splice(0)
     }
 
-    submitGuess(guess: string) {
+    submitGuess(guess: string) {    
+        if( WordsService.isValidWord(guess.toLowerCase()) === false) {
+            alert('invalid word: ' + guess)
+            return
+        }
         const word = new Word(guess)
         this.guesses.push(word)
         word.check(this.secretWord)
