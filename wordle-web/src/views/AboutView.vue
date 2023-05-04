@@ -1,5 +1,5 @@
 <template>
-  <div class="about" style="width: 50vw">
+  <div class="about" style="width: 50vw; flex-direction: column">
     <v-card flat color="transparent" class="pb-10">
       <v-card-title style="color: #76ff03" align="center" class="text-h3 text-decoration-underline">
         EWU CSCD 379
