@@ -9,7 +9,8 @@ export enum GameState {
 }
 
 export class WordleGame {
-  constructor(secretWord?: string | null) {
+  constructor(secretWord?: string) {
+    if (!secretWord) secretWord = WordsService.getRandomWord()
     this.restartGame(secretWord)
   }
 
@@ -26,14 +27,14 @@ export class WordleGame {
     this.guesses[this.currentGuessIndex] = word
   }
 
-  restartGame(secretWord?: string | null, numberOfGuesses: number = 6) {
-    this.secretWord = secretWord || WordsService.getRandomWord()
+  async restartGame(secretWord: string, numberOfGuesses: number = 6) {
+    this.secretWord = secretWord
     this.guesses.splice(0)
     for (let i = 0; i < numberOfGuesses; i++) {
       const word = new Word()
       this.guesses.push(word)
     }
-    console.log(this.guesses)
+    console.log(this.secretWord)
     this.currentGuessIndex = 0
     this.status = GameState.Active
   }
@@ -71,7 +72,7 @@ export class WordleGame {
       this.currentGuessIndex++
     } else {
       this.status = GameState.Lost
-      console.log('You lost!')
+      console.log('You lost! Better luck next time.')
     }
   }
 }

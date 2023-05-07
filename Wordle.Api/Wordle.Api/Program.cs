@@ -9,10 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowAllOrigins,
-        policy =>
-        {
-            policy.WithOrigins("*");
-        });
+                      policy =>
+                      {
+                          policy.WithOrigins("*");
+                          policy.AllowAnyMethod();
+                          policy.AllowAnyHeader();
+                      });
 });
 
 // Add services to the container.

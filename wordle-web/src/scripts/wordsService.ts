@@ -1,8 +1,18 @@
+import Axios from 'axios'
 import { Word } from './word'
 
 export abstract class WordsService {
   static getRandomWord(): string {
     return this.#words[Math.floor(Math.random() * this.#words.length)].toUpperCase()
+  }
+
+  static wordUrl = 'https://wordleclone2023.azurewebsites.net/word'
+
+  static async getWordFromApi(): Promise<string> {
+    // Make axios call to get the word from
+    const response = await Axios.get(this.wordUrl)
+    console.log(response)
+    return response.data
   }
 
   static isValidWord(word: string): boolean {
