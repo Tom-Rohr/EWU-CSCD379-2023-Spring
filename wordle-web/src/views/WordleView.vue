@@ -20,17 +20,20 @@
       <v-btn @click="newGame()" style="tonal">New Game</v-btn>
     </v-col>
   </v-row>
+  <GameOverDialog />
 </template>
 
 <script setup lang="ts">
-import { WordleGame } from '@/scripts/wordleGame'
+import { WordleGame, GameState } from '@/scripts/wordleGame'
+import GameOverDialog from '@/components/GameOverDialog.vue'
 import type { Letter } from '@/scripts/letter'
 import GameBoard from '@/components/GameBoard.vue'
 import KeyBoard from '@/components/KeyBoard.vue'
 import WordsList from '@/components/WordsList.vue'
-import { onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { WordsService } from '@/scripts/wordsService'
 import Axios from 'axios'
+import { watch } from 'vue'
 
 const game = reactive(new WordleGame())
 const overlay = ref(true)
