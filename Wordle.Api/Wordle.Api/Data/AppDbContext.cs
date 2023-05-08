@@ -9,4 +9,5 @@ public class AppDbContext : DbContext
 
     }
     public DbSet<Word> Words => Set<Word>();
+    public DbSet<Player> Players => Set<Player>();
 }
