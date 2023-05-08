@@ -104,6 +104,16 @@
             Game
           </v-btn>
         </v-list-item>
+        <v-list-item>
+          <v-btn
+            color="success"
+            variant="outlined"
+            class="nav-btn"
+            @click="$router.push('/leaderboard')"
+          >
+            Leaderboard
+          </v-btn>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
   </v-toolbar>
