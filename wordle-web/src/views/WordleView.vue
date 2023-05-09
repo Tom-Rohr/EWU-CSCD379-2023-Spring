@@ -16,11 +16,8 @@
     <v-col>
       <v-btn @click="addWord()" style="tonal">Add Word</v-btn>
     </v-col>
-    <v-col>
-      <v-btn @click="newGame()" style="tonal">New Game</v-btn>
-    </v-col>
   </v-row>
-  <GameOverDialog />
+  <GameOverDialog :game="game" v-model="isGameOver" @new-game="clickedNewGame" width="auto" />
 </template>
 
 <script setup lang="ts">
@@ -30,13 +27,28 @@ import type { Letter } from '@/scripts/letter'
 import GameBoard from '@/components/GameBoard.vue'
 import KeyBoard from '@/components/KeyBoard.vue'
 import WordsList from '@/components/WordsList.vue'
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { onMounted, onUnmounted, reactive, ref } from 'vue'
 import { WordsService } from '@/scripts/wordsService'
 import Axios from 'axios'
 import { watch } from 'vue'
 
 const game = reactive(new WordleGame())
 const overlay = ref(true)
+const isGameOver = ref(false)
+
+const clickedNewGame = () => {
+  isGameOver.value = false
+  newGame()
+}
+
+watch(
+  () => game.status,
+  () => {
+    if (game.status == GameState.Won || game.status === GameState.Lost) {
+      isGameOver.value = true
+    }
+  }
+)
 
 newGame()
 
