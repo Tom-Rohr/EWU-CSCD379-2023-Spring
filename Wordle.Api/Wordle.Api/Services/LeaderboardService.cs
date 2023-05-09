@@ -23,8 +23,6 @@ public class LeaderboardService
         //If existing player, update them.
         if (player is not null)
         {
-            player.GameCount++;
-            
             if (player.GameCount == 1){
                 player.AverageAttempts = averageAttempts;
             }
@@ -45,6 +43,12 @@ public class LeaderboardService
         }
         await _db.SaveChangesAsync();
         return player;
+    }
+
+    public async Task<Player> GetPlayer(string name)
+    {
+        var player = await _db.Players.FirstOrDefaultAsync(w => w.Name == name);
+        return player!;
     }
 
     public async Task<IEnumerable<Player>> GetTopTen(int? count)

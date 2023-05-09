@@ -17,6 +17,11 @@ public class LeaderboardController : ControllerBase
     {
         _leaderboardService = leaderboardService;
     }
+    [HttpGet("GetPlayer")]
+    public async Task<Player> GetPlayer(string name)
+    {
+        return await _leaderboardService.GetPlayer(name);
+    }
 
     [HttpGet("GetTopTen")]
     public async Task<IEnumerable<Player>> GetTopTen(int? count)
@@ -28,5 +33,11 @@ public class LeaderboardController : ControllerBase
     public async Task<Player> AddPlayer(string name, int gameCount, double averageAttempts)
     {
         return await _leaderboardService.AddPlayer(name, gameCount, averageAttempts);
+    }
+
+    [HttpPost("AddPlayerFromBody")]
+    public async Task<Player> AddPlayerFromBody([FromBody]PlayerDto player)
+    {
+        return await _leaderboardService.AddPlayer(player.Name, player.GameCount, player.AverageAttempts);
     }
 }
