@@ -1,4 +1,9 @@
 <template>
+  <div>
+    Hello {{ currentPlayer.name }}. You've played {{ currentPlayer.gameCount }} game. You average
+    {{ currentPlayer.averageAttempts }} guesses per game.<br />
+    PlayerId: {{ currentPlayer.playerId }}
+  </div>
   <GameBoard :game="game" />
   <div>
     <WordsList :game="game" />
@@ -22,19 +27,28 @@
 
 <script setup lang="ts">
 import { WordleGame, GameState } from '@/scripts/wordleGame'
-import GameOverDialog from '@/components/GameOverDialog.vue'
+import { WordsService } from '@/scripts/wordsService'
 import type { Letter } from '@/scripts/letter'
+import { Player } from '@/scripts/player'
+import GameOverDialog from '@/components/GameOverDialog.vue'
 import GameBoard from '@/components/GameBoard.vue'
 import KeyBoard from '@/components/KeyBoard.vue'
 import WordsList from '@/components/WordsList.vue'
-import { onMounted, onUnmounted, reactive, ref } from 'vue'
-import { WordsService } from '@/scripts/wordsService'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import Axios from 'axios'
-import { watch } from 'vue'
 
 const game = reactive(new WordleGame())
 const overlay = ref(true)
 const isGameOver = ref(false)
+
+const playerName = ref('Guest')
+const playerId = ref()
+const gamesPlayed = ref(0)
+const averageAttempts = ref<number>(0)
+
+const currentPlayer = computed(() => {
+  return new Player(playerId.value, playerName.value, gamesPlayed.value, averageAttempts.value)
+})
 
 const clickedNewGame = () => {
   isGameOver.value = false
@@ -51,6 +65,7 @@ watch(
 )
 
 newGame()
+setCurrentPlayer('Guest')
 
 onMounted(async () => {
   window.addEventListener('keyup', keyPress)
@@ -72,6 +87,44 @@ function addWord() {
     .catch((error) => {
       console.log(error)
     })
+}
+
+function addPlayer(playerName: string) {
+  overlay.value = true
+  Axios.post('leaderboard/AddPlayer', {
+    name: playerName,
+    gameCount: 0,
+    averageAttempts: 0
+  })
+    .then((response) => {
+      overlay.value = false
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+function setCurrentPlayer(playerName: string) {
+  Axios.get('leaderboard/GetPlayer', {
+    params: {
+      name: playerName
+    }
+  })
+    .then((response) => {
+      playerName = response.data.name
+      playerId.value = response.data.playerID
+      gamesPlayed.value = response.data.gameCount
+      averageAttempts.value = response.data.averageAttempts
+
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  if (playerName === null) {
+    addPlayer(playerName)
+  }
 }
 
 function newGame() {
