@@ -17,7 +17,7 @@ import Axios from 'axios'
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
   Axios.defaults.baseURL = 'https://localhost:7187/'
 } else {
-  Axios.defaults.baseURL = 'https://wordleclone2023.azurewebsites.net/word'
+  Axios.defaults.baseURL = 'https://wordleclone2023.azurewebsites.net/'
 }
 
 const Easter = {

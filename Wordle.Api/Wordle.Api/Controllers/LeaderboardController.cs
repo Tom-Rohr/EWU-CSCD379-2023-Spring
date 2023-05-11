@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using Wordle.Api.Data;
 using Wordle.Api.Dtos;
 using Wordle.Api.Services;
@@ -40,4 +41,10 @@ public class LeaderboardController : ControllerBase
     {
         return await _leaderboardService.AddPlayer(player.Name, player.GameCount, player.AverageAttempts);
     }
+
+    [HttpGet("IsExistingPlayer")]
+    public async Task<bool> IsExistingPlayer(string name)
+    {
+        return await _leaderboardService.IsExistingPlayer(name);
+    } 
 }

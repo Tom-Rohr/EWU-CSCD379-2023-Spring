@@ -1,4 +1,5 @@
 <template>
+  <GetPlayerNameDialog v-model="setUserState" :setCurrentPlayer="setCurrentPlayer" width="auto" />
   <div>
     Hello {{ currentPlayer.name }}. You've played {{ currentPlayer.gameCount }} game. You average
     {{ currentPlayer.averageAttempts }} guesses per game.<br />
@@ -31,23 +32,28 @@ import { WordsService } from '@/scripts/wordsService'
 import type { Letter } from '@/scripts/letter'
 import { Player } from '@/scripts/player'
 import GameOverDialog from '@/components/GameOverDialog.vue'
+import GetPlayerNameDialog from '@/components/GetPlayerNameDialog.vue'
 import GameBoard from '@/components/GameBoard.vue'
 import KeyBoard from '@/components/KeyBoard.vue'
 import WordsList from '@/components/WordsList.vue'
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import Axios from 'axios'
+import { PlayersService } from '@/scripts/playersService'
 
 const game = reactive(new WordleGame())
 const overlay = ref(true)
 const isGameOver = ref(false)
+const setUserState = ref(true)
 
-const playerName = ref('Guest')
+const playerName = ref('')
 const playerId = ref()
 const gamesPlayed = ref(0)
 const averageAttempts = ref<number>(0)
 
 const currentPlayer = computed(() => {
-  return new Player(playerId.value, playerName.value, gamesPlayed.value, averageAttempts.value)
+  return reactive(
+    new Player(playerId.value, playerName.value, gamesPlayed.value, averageAttempts.value)
+  )
 })
 
 const clickedNewGame = () => {
@@ -63,9 +69,16 @@ watch(
     }
   }
 )
+watch(
+  () => setUserState.value,
+  () => {
+    if (setUserState.value) {
+      setUserState.value = false
+    }
+  }
+)
 
 newGame()
-setCurrentPlayer('Guest')
 
 onMounted(async () => {
   window.addEventListener('keyup', keyPress)
@@ -91,7 +104,7 @@ function addWord() {
 
 function addPlayer(playerName: string) {
   overlay.value = true
-  Axios.post('leaderboard/AddPlayer', {
+  Axios.post(`leaderboard/?name=${playerName}`, {
     name: playerName,
     gameCount: 0,
     averageAttempts: 0
@@ -99,32 +112,40 @@ function addPlayer(playerName: string) {
     .then((response) => {
       overlay.value = false
       console.log(response.data)
+      console.log('player successfully added')
     })
     .catch((error) => {
       console.log(error)
     })
 }
 
-function setCurrentPlayer(playerName: string) {
-  Axios.get('leaderboard/GetPlayer', {
-    params: {
-      name: playerName
-    }
-  })
-    .then((response) => {
-      playerName = response.data.name
-      playerId.value = response.data.playerID
-      gamesPlayed.value = response.data.gameCount
-      averageAttempts.value = response.data.averageAttempts
+async function setCurrentPlayer(name: string) {
+  if (!(await PlayersService.isExistingPlayer(name))) {
+    addPlayer(name)
+  } else {
+    Axios.get('leaderboard/GetPlayer', {
+      params: {
+        name: name
+      }
+    })
+      .then((response) => {
+        playerName.value = response.data.name
+        playerId.value = response.data.playerID
+        gamesPlayed.value = response.data.gameCount
+        averageAttempts.value = response.data.averageAttempts
 
-      console.log(response.data)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-  if (playerName === null) {
-    addPlayer(playerName)
+        console.log(response.data)
+        console.log(currentPlayer.value)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
+
+  if (setUserState.value) {
+    setUserState.value = false
+  }
+  console.log(playerName.value + ' has been set as the current user')
 }
 
 function newGame() {
@@ -150,12 +171,14 @@ function addChar(letter: Letter) {
 }
 
 function keyPress(event: KeyboardEvent) {
-  if (event.key.length === 1) {
-    game.currentGuess.push(event.key.toUpperCase())
-  } else if (event.key === 'Backspace') {
-    game.currentGuess.pop()
-  } else if (event.key === 'Enter') {
-    checkGuess()
+  if (!setUserState.value) {
+    if (event.key.length === 1) {
+      game.currentGuess.push(event.key.toUpperCase())
+    } else if (event.key === 'Backspace') {
+      game.currentGuess.pop()
+    } else if (event.key === 'Enter') {
+      checkGuess()
+    }
   }
 }
 

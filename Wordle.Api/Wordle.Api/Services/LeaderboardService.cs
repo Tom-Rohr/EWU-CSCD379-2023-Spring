@@ -65,4 +65,17 @@ public class LeaderboardService
             .ToListAsync();
         return topTen;
     }
+
+    public async Task<bool> IsExistingPlayer(string name)
+    {
+        if (await _db.Players.AnyAsync(player => player.Name == name))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        
+    }
 }

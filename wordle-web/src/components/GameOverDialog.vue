@@ -31,7 +31,7 @@ function setTitle() {
   }
 }
 onUpdated(setTitle)
-//onMounted(setTitle)
+onMounted(setTitle)
 </script>
 
 <style scoped>
