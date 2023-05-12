@@ -17,4 +17,19 @@ export abstract class PlayersService {
     const response = await Axios.get(this.playerUrl + '/IsExistingPlayer?name=' + playerName)
     return response.data
   }
+
+  static async updatePlayerStats(playerId: string, gameCount: number, averageAttempts: number) {
+    await Axios.post(`leaderboard/UpdatePlayerStats?name=${playerId}&{}`, {
+      playerId: playerId,
+      gameCount: 0,
+      averageAttempts: 0
+    })
+      .then((response) => {
+        console.log(response.data)
+        console.log('player successfully added')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
 }
