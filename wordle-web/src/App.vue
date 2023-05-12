@@ -1,8 +1,3 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import NavBar from '@/components/NavBar.vue'
-</script>
-
 <template>
   <v-app>
     <v-app-bar :elevation="3">
@@ -50,6 +45,7 @@ import { provide } from 'vue'
 import { PlayerService } from './scripts/playerService'
 import { Services } from './scripts/services'
 import ActiveUser from './components/ActiveUser.vue'
+import { RouterLink, RouterView } from 'vue-router'
 
 // Provide the useDisplay to other components so that it can be used in testing.
 const display = reactive(useDisplay())
